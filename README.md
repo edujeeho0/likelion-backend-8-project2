@@ -47,3 +47,10 @@ CMD에서,
 - [사용자 인증 및 권한 처리](md/1_auth.md)
 - [중고거래 중개하기](md/2_trade.md)
 - [쇼핑몰 운영하기](md/3_shop.md)
+
+## 추가 기능
+
+- [결제 시스템](md/extra/1_toss.md)
+- [사용자 위치기반 기능](md/extra/2_maps.md)
+- [알림 기능 추가하기 - Email](md/extra/3_mail.md)
+- [자동 로그인 방지](md/extra/4_captcha.md)
