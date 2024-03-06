@@ -2,6 +2,9 @@ package com.example.market.shop;
 
 import com.example.market.auth.AuthenticationFacade;
 import com.example.market.auth.entity.UserEntity;
+import com.example.market.ncp.dto.direction.DirectionNcpResponse;
+import com.example.market.ncp.dto.geolocation.GeoLocationNcpResponse;
+import com.example.market.ncp.service.NcpApiService;
 import com.example.market.shop.dto.ShopDto;
 import com.example.market.shop.entity.Shop;
 import com.example.market.shop.entity.ShopOpenRequest;
@@ -23,6 +26,7 @@ public class ShopService {
     private final AuthenticationFacade authFacade;
     private final ShopRepo shopRepo;
     private final ShopOpenReqRepo openRepo;
+    private final NcpApiService apiService;
 
     public ShopDto readOne(Long id) {
         Shop shop = shopRepo.findById(id)
@@ -36,7 +40,6 @@ public class ShopService {
     }
 
     public Page<ShopDto> readPage(Pageable pageable) {
-        // TODO sorting
         return shopRepo.findAllByStatus(Shop.Status.OPEN, pageable)
                 .map(ShopDto::fromEntity);
     }
@@ -86,6 +89,20 @@ public class ShopService {
         if (!shop.getOwner().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         return shop;
+    }
+
+    public DirectionNcpResponse findRoute(Long id, String fromIp) {
+        Shop shop = shopRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (shop.getStatus() != Shop.Status.OPEN)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        GeoLocationNcpResponse geoResponse = apiService.geoLocation(fromIp);
+        String fromCoords = String.format(
+                "%s,%s",
+                geoResponse.getGeoLocation().getLng(),
+                geoResponse.getGeoLocation().getLat()
+        );
+        return apiService.direction5(fromCoords, shop.getCoordinates());
     }
 
 }

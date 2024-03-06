@@ -1,5 +1,6 @@
 package com.example.market.shop;
 
+import com.example.market.ncp.dto.direction.DirectionNcpResponse;
 import com.example.market.shop.dto.ItemOrderDto;
 import com.example.market.shop.dto.ShopDto;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,16 @@ public class ShopController {
             Long id
     ) {
         return service.readOne(id);
+    }
+
+    @GetMapping("{id}/route")
+    public DirectionNcpResponse findRoute(
+            @PathVariable("id")
+            Long id,
+            @RequestParam("fromip")
+            String ip
+    ) {
+        return service.findRoute(id, ip);
     }
 
     @GetMapping("{id}/orders")
