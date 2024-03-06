@@ -1,5 +1,7 @@
 package com.example.market.trade;
 
+import com.example.market.ncp.dto.direction.DirectionNcpResponse;
+import com.example.market.trade.dto.TradeLocationDto;
 import com.example.market.trade.dto.TradeOfferDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,5 +45,36 @@ public class OfferController {
             TradeOfferDto dto
     ) {
         return service.updateOffer(itemId, offerId, dto);
+    }
+
+
+    @PostMapping("{offerId}/locations")
+    public TradeLocationDto createLocation(
+            @PathVariable("offerId")
+            Long offerId,
+            @RequestBody
+            TradeLocationDto dto
+    ) {
+        return service.createLocation(offerId, dto);
+    }
+
+    @PutMapping("{offerId}/locations/{locationId}")
+    public TradeLocationDto acceptLocation(
+            @PathVariable("offerId")
+            Long offerId,
+            @PathVariable("locationId")
+            Long locationId
+    ) {
+        return service.acceptLocation(offerId, locationId);
+    }
+
+    @GetMapping("{offerId}/locations/{locationId}")
+    public DirectionNcpResponse findRoute(
+            @PathVariable("locationId")
+            Long locationId,
+            @RequestParam("fromip")
+            String fromIp
+    ) {
+        return service.findRoute(locationId, fromIp);
     }
 }
