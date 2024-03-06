@@ -1,9 +1,9 @@
 package com.example.market.shop.dto;
 
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@Setter
 @ToString
 public class ItemSearchParams {
     private String name;

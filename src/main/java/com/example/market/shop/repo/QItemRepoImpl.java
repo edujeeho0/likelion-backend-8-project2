@@ -11,10 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Slf4j
+@Repository
 @RequiredArgsConstructor
 public class QItemRepoImpl implements QItemRepo {
     private final JPAQueryFactory queryFactory;
@@ -24,6 +26,8 @@ public class QItemRepoImpl implements QItemRepo {
     public Page<ShopItem> searchItems(ItemSearchParams params, Pageable pageable) {
         List<ShopItem> content = queryFactory
                 .selectFrom(item)
+                .join(item.shop)
+                .fetchJoin()
                 .where(
                         nameContains(params.getName()),
                         priceBetween(params.getPriceFloor(), params.getPriceCeil())

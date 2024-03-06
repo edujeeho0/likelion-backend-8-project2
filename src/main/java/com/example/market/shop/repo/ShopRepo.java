@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface ShopRepo extends JpaRepository<Shop, Long> {
-    @Query("SELECT DISTINCT s " +
+    @Query("SELECT s " +
             "FROM Shop s JOIN s.items i JOIN i.orders o " +
             "WHERE s.status = :status " +
             "ORDER BY o.createdAt DESC ")
