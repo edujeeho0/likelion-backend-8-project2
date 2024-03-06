@@ -5,6 +5,8 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -25,8 +27,6 @@ public class Shop extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Status status = Status.PREPARING;
 
-    @Setter
-    private Boolean closed;
     @Setter
     private String closeReason;
     public enum Category {

@@ -14,12 +14,12 @@ public class ShopDto {
     private String description;
     private Shop.Category category;
     private Shop.Status status;
-    private Boolean closed;
     private String closeReason;
 
     public static ShopDto fromEntity(Shop entity) {
         return fromEntity(entity, false);
     }
+
     public static ShopDto fromEntity(Shop entity, boolean admin) {
         ShopDtoBuilder builder = ShopDto.builder()
                 .id(entity.getId())
@@ -28,7 +28,6 @@ public class ShopDto {
                 .category(entity.getCategory())
                 .status(entity.getStatus());
         if (admin) builder
-                .closed(entity.getClosed())
                 .closeReason(entity.getCloseReason());
         return builder.build();
     }
