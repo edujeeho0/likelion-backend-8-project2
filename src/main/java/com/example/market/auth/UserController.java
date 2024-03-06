@@ -1,4 +1,4 @@
-package com.example.market.auth.controller;
+package com.example.market.auth;
 
 import com.example.market.auth.JpaUserService;
 import com.example.market.auth.dto.*;

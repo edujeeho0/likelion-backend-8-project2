@@ -1,4 +1,4 @@
-package com.example.market.auth.dto;
+package com.example.market.admin.dto;
 
 import com.example.market.auth.entity.UserUpgrade;
 import lombok.AllArgsConstructor;

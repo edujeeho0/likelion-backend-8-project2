@@ -1,8 +1,7 @@
-package com.example.market.auth.controller;
+package com.example.market.admin;
 
-import com.example.market.auth.AdminService;
 import com.example.market.auth.dto.UserDto;
-import com.example.market.auth.dto.UserUpgradeDto;
+import com.example.market.admin.dto.UserUpgradeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

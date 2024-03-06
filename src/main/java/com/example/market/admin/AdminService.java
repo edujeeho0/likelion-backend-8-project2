@@ -1,7 +1,7 @@
-package com.example.market.auth;
+package com.example.market.admin;
 
 import com.example.market.auth.dto.UserDto;
-import com.example.market.auth.dto.UserUpgradeDto;
+import com.example.market.admin.dto.UserUpgradeDto;
 import com.example.market.auth.entity.UserUpgrade;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
