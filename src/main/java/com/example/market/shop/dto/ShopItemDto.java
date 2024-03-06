@@ -11,16 +11,18 @@ import lombok.*;
 public class ShopItemDto {
     private Long id;
     private Long shopId;
-    private String img;
+    private String name;
     private String description;
+    private String img;
     private Integer price;
     private Integer stock;
 
     public static ShopItemDto fromEntity(ShopItem entity) {
         return ShopItemDto.builder()
                 .id(entity.getId())
-                .img(entity.getImg())
+                .name(entity.getName())
                 .description(entity.getDescription())
+                .img(entity.getImg())
                 .price(entity.getPrice())
                 .stock(entity.getStock())
                 .build();
