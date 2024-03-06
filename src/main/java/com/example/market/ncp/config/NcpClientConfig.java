@@ -1,5 +1,6 @@
 package com.example.market.ncp.config;
 
+import com.example.market.ncp.service.NcpCaptchaService;
 import com.example.market.ncp.service.NcpGeolocationService;
 import com.example.market.ncp.service.NcpMapApiService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class NcpClientConfig {
     private String ncpApiClientSecret;
 
     @Bean
-    public RestClient ncpMapClient() {
+    public RestClient ncpOpenClient() {
         return RestClient.builder()
                 .baseUrl("https://naveropenapi.apigw.ntruss.com")
                 .defaultHeader(NCP_APIGW_KEY_ID, ncpApiClientId)
@@ -45,12 +46,17 @@ public class NcpClientConfig {
 
     @Bean
     public NcpMapApiService mapApiService() {
-        return HttpServiceProxyFactory.builderFor(RestClientAdapter.create(ncpMapClient()))
+        return HttpServiceProxyFactory.builderFor(RestClientAdapter.create(ncpOpenClient()))
                 .build()
                 .createClient(NcpMapApiService.class);
     }
 
-
+    @Bean
+    public NcpCaptchaService captchaService() {
+        return HttpServiceProxyFactory.builderFor(RestClientAdapter.create(ncpOpenClient()))
+                .build()
+                .createClient(NcpCaptchaService.class);
+    }
 
     @Value("${ncp.api.api-access}")
     private String ncpApiAccess;

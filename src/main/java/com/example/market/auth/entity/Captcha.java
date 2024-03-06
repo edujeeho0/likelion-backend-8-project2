@@ -4,19 +4,18 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Validation extends BaseEntity {
+public class Captcha extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
-    private String validation;
-    private Boolean validated;
+    private String key;
+    @Setter
+    @Builder.Default
+    private Boolean used = false;
 }

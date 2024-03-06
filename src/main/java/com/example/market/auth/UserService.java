@@ -3,14 +3,16 @@ package com.example.market.auth;
 import com.example.market.FileHandlerUtils;
 import com.example.market.alert.AlertService;
 import com.example.market.auth.dto.*;
-import com.example.market.auth.entity.MarketUserDetails;
-import com.example.market.auth.entity.UserEntity;
-import com.example.market.auth.entity.UserUpgrade;
-import com.example.market.auth.entity.Validation;
+import com.example.market.auth.entity.*;
+import com.example.market.auth.exception.UserIsOwnerException;
 import com.example.market.auth.jwt.JwtTokenUtils;
+import com.example.market.auth.repo.CaptchaRepo;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
 import com.example.market.auth.repo.ValidationRepo;
+import com.example.market.ncp.dto.NcpCaptchaDto;
+import com.example.market.ncp.service.NcpCaptchaService;
+import com.google.gson.Gson;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -34,10 +37,13 @@ public class UserService implements UserDetailsService {
     private final UserRepo userRepo;
     private final ValidationRepo validationRepo;
     private final UserUpgradeRepo userUpgradeRepo;
+    private final CaptchaRepo captchaRepo;
+    private final NcpCaptchaService captchaService;
     private final AlertService alertService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final FileHandlerUtils fileHandlerUtils;
+    private final Gson gson;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -68,7 +74,28 @@ public class UserService implements UserDetailsService {
                 userEntity.getPassword()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
+        if (userEntity.getRoles().contains("ROLE_OWNER"))
+            throw new UserIsOwnerException(userEntity);
         String jwt = jwtTokenUtils.generateToken(MarketUserDetails.fromEntity(userEntity));
+        JwtResponseDto response = new JwtResponseDto();
+        response.setToken(jwt);
+        return response;
+    }
+
+    public JwtResponseDto captcha(CaptchaDto dto) {
+        Captcha captcha = captchaRepo.findByKey(dto.getKey())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        captcha.setUsed(true);
+        captcha = captchaRepo.save(captcha);
+        Map<String, Object> params = Map.of(
+                "code", 1,
+                "key", captcha.getKey(),
+                "value", dto.getValue());
+        NcpCaptchaDto ncpCaptchaDto
+                = gson.fromJson(captchaService.captcha(params), NcpCaptchaDto.class);
+        if (!ncpCaptchaDto.getResult())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        String jwt = jwtTokenUtils.generateToken(MarketUserDetails.fromEntity(captcha.getUser()));
         JwtResponseDto response = new JwtResponseDto();
         response.setToken(jwt);
         return response;

@@ -26,7 +26,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/users/signin",
-                                "/users/signup"
+                                "/users/signup",
+                                "/users/captcha"
                         )
                         .anonymous()
                         .requestMatchers(

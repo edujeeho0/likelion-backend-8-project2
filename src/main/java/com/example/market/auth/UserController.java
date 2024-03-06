@@ -23,6 +23,14 @@ public class UserController {
         return userService.signin(dto);
     }
 
+    @PostMapping("captcha")
+    public JwtResponseDto signIn(
+            @RequestBody
+            CaptchaDto dto
+    ) {
+        return userService.captcha(dto);
+    }
+
     @PostMapping("signup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public UserDto signUp(
