@@ -30,6 +30,8 @@ public class TradeItemService {
 
     public TradeItemDto create(TradeItemDto dto) {
         UserEntity user = authFacade.extractUser();
+        if (dto.getTitle() == null || dto.getContent() == null || dto.getMinPrice() == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         return TradeItemDto.fromEntity(tradeItemRepo.save(TradeItem.builder()
                 .user(user)
                 .title(dto.getTitle())

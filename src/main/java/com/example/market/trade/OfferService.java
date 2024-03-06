@@ -55,7 +55,7 @@ public class OfferService {
         if (item.getUser().getId().equals(user.getId()))
             return offerRepo.findAll(pageable)
                     .map(TradeOfferDto::fromEntity);
-        else return offerRepo.findAllByUserId(user.getId(), pageable)
+        else return offerRepo.findAllByItemIdAndUserId(item.getId(), user.getId(), pageable)
                 .map(TradeOfferDto::fromEntity);
     }
 

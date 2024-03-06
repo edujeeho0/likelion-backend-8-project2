@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TradeOfferRepo extends JpaRepository<TradeOffer, Long> {
-    Page<TradeOffer> findAllByUserId(Long userId, Pageable pageable);
+    Page<TradeOffer> findAllByItemIdAndUserId(Long itemId, Long userId, Pageable pageable);
     List<TradeOffer> findAllByIdNot(Long id);
 }
