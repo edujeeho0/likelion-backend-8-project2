@@ -61,19 +61,20 @@ public class ShopService {
                 shop.getStatus() == Shop.Status.PREPARING
         ))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (openRepo.existsByShopIdAndIsApprovedIsNull(id))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         openRepo.save(ShopOpenRequest.builder()
                 .shop(shop)
                 .build());
     }
 
     @Transactional
-    public void requestClose(Long id) {
+    public void requestClose(Long id, ShopDto dto) {
         Shop shop = checkOwner(id);
         if (shop.getStatus() != Shop.Status.OPEN)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        openRepo.save(ShopOpenRequest.builder()
-                .shop(shop)
-                .build());
+        shop.setCloseReason(dto.getCloseReason());
+        shopRepo.save(shop);
     }
 
     private Shop checkOwner(Long id) {

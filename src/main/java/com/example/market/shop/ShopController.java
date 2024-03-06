@@ -53,8 +53,10 @@ public class ShopController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void requestClose(
             @PathVariable("id")
-            Long id
+            Long id,
+            @RequestBody
+            ShopDto dto
     ) {
-        service.requestClose(id);
+        service.requestClose(id, dto);
     }
 }
