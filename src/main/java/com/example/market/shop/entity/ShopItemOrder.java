@@ -27,6 +27,6 @@ public class ShopItemOrder extends BaseEntity {
     private String reason;
 
     public enum Status {
-        ORDERED, ACCEPTED, DECLINED, CANCELED
+        ORDERED, ACCEPTED, DECLINED, CANCELED, VISIT
     }
 }

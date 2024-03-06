@@ -26,3 +26,11 @@ jwt:
 
 toss:
   secret: <toss-secret>
+
+ncp:
+  api:
+    client-id: <client-id>
+    client-secret: <client-secret>
+
+    api-access: <api-access>
+    api-secret: <api-secret>
