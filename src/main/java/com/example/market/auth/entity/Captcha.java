@@ -14,7 +14,7 @@ import lombok.*;
 public class Captcha extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private UserEntity user;
-    private String key;
+    private String captchaKey;
     @Setter
     @Builder.Default
     private Boolean used = false;

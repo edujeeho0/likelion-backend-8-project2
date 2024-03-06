@@ -139,6 +139,9 @@ public class OfferService {
         UserEntity user = authFacade.extractUser();
         if (location.getUser().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        if (!location.getOffer().getUser().getId().equals(user.getId()) &&
+            !location.getOffer().getItem().getUser().getId().equals(user.getId()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
         location.setStatus(TradeLocation.Status.CONFIRMED);
         return TradeLocationDto.fromEntity(locationRepo.save(location));

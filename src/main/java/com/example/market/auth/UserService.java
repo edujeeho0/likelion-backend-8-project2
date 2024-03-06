@@ -89,7 +89,7 @@ public class UserService implements UserDetailsService {
         captcha = captchaRepo.save(captcha);
         Map<String, Object> params = Map.of(
                 "code", 1,
-                "key", captcha.getKey(),
+                "key", captcha.getCaptchaKey(),
                 "value", dto.getValue());
         NcpCaptchaDto ncpCaptchaDto
                 = gson.fromJson(captchaService.captcha(params), NcpCaptchaDto.class);
