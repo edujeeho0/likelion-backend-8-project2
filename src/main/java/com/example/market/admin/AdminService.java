@@ -5,7 +5,10 @@ import com.example.market.admin.dto.UserUpgradeDto;
 import com.example.market.auth.entity.UserUpgrade;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
+import com.example.market.shop.dto.ShopDto;
 import com.example.market.shop.entity.Shop;
+import com.example.market.shop.entity.ShopOpenRequest;
+import com.example.market.shop.repo.ShopOpenReqRepo;
 import com.example.market.shop.repo.ShopRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ public class AdminService {
     private final UserRepo userRepo;
     private final UserUpgradeRepo userUpgradeRepo;
     private final ShopRepo shopRepo;
+    private final ShopOpenReqRepo openRepo;
 
     public List<UserUpgradeDto> listRequests() {
         return userUpgradeRepo.findAll().stream()
@@ -53,5 +57,55 @@ public class AdminService {
     public Page<UserDto> readUsersPage(Pageable pageable) {
         return userRepo.findAll(pageable)
                 .map(UserDto::fromEntity);
+    }
+
+    public Page<ShopDto> readOpenRequests(Pageable pageable) {
+        return shopRepo.findAllByStatus(Shop.Status.PREPARING, pageable)
+                .map(ShopDto::fromEntity);
+    }
+
+    public Page<ShopDto> readCloseRequests(Pageable pageable) {
+        return shopRepo.findCloseRequested(Shop.Status.CLOSED, pageable)
+                .map(ShopDto::fromEntity);
+    }
+
+    @Transactional
+    public ShopDto approveOpen(Long shopId, Long reqId) {
+        ShopOpenRequest request = openRepo.findById(reqId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (request.getIsApproved() != null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        Shop shop = request.getShop();
+        if (!shop.getId().equals(shopId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        request.setIsApproved(true);
+        shop.setStatus(Shop.Status.OPEN);
+        return ShopDto.fromEntity(shop, true);
+    }
+
+    public void disapproveOpen(
+            Long shopId,
+            Long reqId,
+            String reason
+    ) {
+        ShopOpenRequest request = openRepo.findById(reqId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Shop shop = request.getShop();
+        if (!shop.getId().equals(shopId))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        request.setReason(reason);
+        request.setIsApproved(false);
+        openRepo.save(request);
+    }
+
+    public ShopDto approveClose(Long shopId) {
+        Shop shop = shopRepo.findById(shopId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (shop.getCloseReason() == null || shop.getStatus() != Shop.Status.OPEN)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
+        shop.setStatus(Shop.Status.CLOSED);
+        return ShopDto.fromEntity(shopRepo.save(shop), true);
     }
 }

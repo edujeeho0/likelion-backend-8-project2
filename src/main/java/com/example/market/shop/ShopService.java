@@ -37,7 +37,7 @@ public class ShopService {
 
     public Page<ShopDto> readPage(Pageable pageable) {
         // TODO sorting
-        return shopRepo.findAll(pageable)
+        return shopRepo.findAllByStatus(Shop.Status.OPEN, pageable)
                 .map(ShopDto::fromEntity);
     }
 
