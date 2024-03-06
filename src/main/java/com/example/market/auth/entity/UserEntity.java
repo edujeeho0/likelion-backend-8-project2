@@ -4,10 +4,7 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
@@ -19,11 +16,16 @@ public class UserEntity extends BaseEntity {
     @Column(unique = true)
     private String username;
     private String password;
+    @Setter
     private Integer age;
+    @Setter
     @Column(unique = true)
     private String email;
+    @Setter
     @Column(unique = true)
     private String phone;
+    @Setter
     private String profileImg;
+    @Setter
     private String roles;
 }

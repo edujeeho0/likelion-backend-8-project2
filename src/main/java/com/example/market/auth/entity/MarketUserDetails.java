@@ -33,7 +33,7 @@ public class MarketUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.stream(rolesRaw.split(","))
+        return Arrays.stream(entity.getRoles().split(","))
                 .map(role -> (GrantedAuthority) () -> role)
                 .toList();
     }
