@@ -9,6 +9,8 @@ import com.example.market.shop.entity.ShopItemOrder;
 import com.example.market.shop.repo.ShopItemOrderRepo;
 import com.example.market.shop.repo.ShopItemRepo;
 import com.example.market.shop.repo.ShopRepo;
+import com.example.market.toss.TossHttpService;
+import com.example.market.toss.dto.PaymentCancelDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ public class OrderService {
     private final ShopRepo shopRepo;
     private final ShopItemRepo itemRepo;
     private final ShopItemOrderRepo orderRepo;
+    private final TossHttpService tossHttpService;
 
     public ItemOrderDto createOrder(ItemOrderDto dto) {
         ShopItem item = itemRepo.findById(dto.getItemId())
@@ -79,6 +82,12 @@ public class OrderService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 order.setReason(dto.getReason());
                 order.setStatus(dto.getStatus());
+                tossHttpService.cancelPayment(
+                        order.getPaymentKey(),
+                        PaymentCancelDto.builder()
+                                .cancelReason(String.format("DECLINED: %s", dto.getReason()))
+                                .build()
+                );
             }
             case ACCEPTED -> {
                 if (!order.getItem()
@@ -95,6 +104,12 @@ public class OrderService {
                 if (order.getStatus().equals(ShopItemOrder.Status.ACCEPTED))
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 order.setStatus(dto.getStatus());
+                tossHttpService.cancelPayment(
+                        order.getPaymentKey(),
+                        PaymentCancelDto.builder()
+                                .cancelReason(String.format("CANCELED: %s", dto.getReason()))
+                                .build()
+                );
             }
         }
         return ItemOrderDto.fromEntity(orderRepo.save(order));

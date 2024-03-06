@@ -37,12 +37,15 @@ public class TossService {
         int count = tossPayment.getTotalAmount() / item.getPrice();
         UserEntity user = authFacade.extractUser();
         item.decreaseStock(count);
-        return ItemOrderDto.fromEntity(orderRepo.save(ShopItemOrder.builder()
+        ItemOrderDto response = ItemOrderDto.fromEntity(orderRepo.save(ShopItemOrder.builder()
                 .item(item)
                 .orderUser(user)
                 .count(count)
                 .totalPrice(tossPayment.getTotalAmount())
+                .paymentKey(tossPayment.getPaymentKey())
                 .build()));
+        httpService.confirmPayment(dto);
+        return response;
     }
 
     private ShopItem getItem(Long itemId) {

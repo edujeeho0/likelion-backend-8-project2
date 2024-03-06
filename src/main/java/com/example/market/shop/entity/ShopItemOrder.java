@@ -18,6 +18,7 @@ public class ShopItemOrder extends BaseEntity {
     private String address;
     private Integer count;
     private Integer totalPrice;
+    private String paymentKey;
     @Setter
     @Builder.Default
     @Enumerated(EnumType.STRING)
