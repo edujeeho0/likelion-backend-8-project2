@@ -29,11 +29,10 @@ public class AlertEmailService implements AlertService {
     private final ShopItemOrderRepo orderRepo;
 
     @Override
-    public void sendValidation(Long userId, String validationCode) {
-        UserEntity user = userRepo.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    public void sendValidation(UserEntity user, String validationCode) {
         if (!user.getRoles().equals("ROLE_INACTIVE"))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+
         sendMail(
                 user.getEmail(),
                 "이메일 인증 요청",

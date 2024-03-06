@@ -119,7 +119,7 @@ public class UserService implements UserDetailsService {
                     .validation(validationCode)
                     .validated(false)
                     .build());
-            alertService.sendValidation(userEntity.getId(), validationCode);
+            alertService.sendValidation(userEntity, validationCode);
         }
         return UserDto.fromEntity(userRepo.save(userEntity));
     }
@@ -153,7 +153,7 @@ public class UserService implements UserDetailsService {
                     .validation(validationCode)
                     .validated(false)
                     .build());
-            alertService.sendValidation(userEntity.getId(), validationCode);
+            alertService.sendValidation(userEntity, validationCode);
         }
         else throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }

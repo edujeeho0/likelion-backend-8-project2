@@ -26,10 +26,13 @@ spring:
     username: <username>
     password: <password>
     properties:
-      smtp:
-        auth: true
-        starttls:
-          enable: true
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+
 
 jwt:
   secret: aaaabbbsdifqbvaesoioegwaaaabbbsdifqbvaesoioegwaaaabbbsdifqbvaes
