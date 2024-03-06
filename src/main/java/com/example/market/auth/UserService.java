@@ -1,5 +1,6 @@
 package com.example.market.auth;
 
+import com.example.market.FileHandlerUtils;
 import com.example.market.auth.dto.*;
 import com.example.market.auth.entity.MarketUserDetails;
 import com.example.market.auth.entity.UserEntity;
@@ -26,24 +27,26 @@ import java.util.List;
 @Slf4j
 @Service
 //@RequiredArgsConstructor
-public class JpaUserService implements UserDetailsService {
+public class UserService implements UserDetailsService {
     private final AuthenticationFacade authFacade;
     private final UserRepo userRepo;
     private final UserUpgradeRepo userUpgradeRepo;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
+    private final FileHandlerUtils fileHandlerUtils;
 
-    public JpaUserService(
+    public UserService(
             AuthenticationFacade authFacade,
             UserRepo userRepo,
             UserUpgradeRepo userUpgradeRepo, PasswordEncoder passwordEncoder,
-            JwtTokenUtils jwtTokenUtils
-    ) {
+            JwtTokenUtils jwtTokenUtils,
+            FileHandlerUtils fileHandlerUtils) {
         this.authFacade = authFacade;
         this.userRepo = userRepo;
         this.userUpgradeRepo = userUpgradeRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtils = jwtTokenUtils;
+        this.fileHandlerUtils = fileHandlerUtils;
         userRepo.saveAll(List.of(
                 UserEntity.builder()
                         .username("inactive")
@@ -137,29 +140,12 @@ public class JpaUserService implements UserDetailsService {
 
     public UserDto profileImg(MultipartFile file) {
         UserEntity userEntity = authFacade.extractUser();
-        String profileDir = String.format("media/users/%d/", userEntity.getId());
-        log.info(profileDir);
-        try {
-            Files.createDirectories(Path.of(profileDir));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String requestPath = fileHandlerUtils.saveFile(
+                String.format("users/%d/", userEntity.getId()),
+                "profile",
+                file
+        );
 
-        String originalFilename = file.getOriginalFilename();
-        String[] fileNameSplit = originalFilename.split("\\.");
-        String extension = fileNameSplit[fileNameSplit.length - 1];
-        String profileFilename = "profile." + extension;
-        String profilePath = profileDir + profileFilename;
-
-        try {
-            file.transferTo(Path.of(profilePath));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        String requestPath = String.format("/static/users/%d/%s", userEntity.getId(), profileFilename);
         userEntity.setProfileImg(requestPath);
         return UserDto.fromEntity(userRepo.save(userEntity));
     }

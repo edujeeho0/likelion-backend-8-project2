@@ -1,5 +1,6 @@
 package com.example.market.trade;
 
+import com.example.market.FileHandlerUtils;
 import com.example.market.auth.AuthenticationFacade;
 import com.example.market.auth.entity.UserEntity;
 import com.example.market.trade.dto.TradeItemDto;
@@ -23,8 +24,9 @@ import java.nio.file.Path;
 @Service
 @RequiredArgsConstructor
 public class TradeItemService {
-    private AuthenticationFacade authFacade;
-    private TradeItemRepo tradeItemRepo;
+    private final AuthenticationFacade authFacade;
+    private final TradeItemRepo tradeItemRepo;
+    private final FileHandlerUtils fileHandlerUtils;
 
     public TradeItemDto create(TradeItemDto dto) {
         UserEntity user = authFacade.extractUser();
@@ -67,27 +69,11 @@ public class TradeItemService {
         if (!tradeItem.getUser().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
-        String itemImgDir = String.format("media/trades/%d/", id);
-        try {
-            Files.createDirectories(Path.of(itemImgDir));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        String originalFilename = file.getOriginalFilename();
-        String[] fileNameSplit = originalFilename.split("\\.");
-        String extension = fileNameSplit[fileNameSplit.length - 1];
-        String tradeItemFilename = "image." + extension;
-        String tradeItemPath = itemImgDir + tradeItemFilename;
-
-        try {
-            file.transferTo(Path.of(tradeItemPath));
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        String requestPath = String.format("/static/trades/%d/%s", id, tradeItemFilename);
+        String requestPath = fileHandlerUtils.saveFile(
+                String.format("trades/%d/", tradeItem.getId()),
+                "image",
+                file
+        );
 
         tradeItem.setImg(requestPath);
         return TradeItemDto.fromEntity(tradeItemRepo.save(tradeItem));

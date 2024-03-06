@@ -1,6 +1,5 @@
 package com.example.market.auth;
 
-import com.example.market.auth.JpaUserService;
 import com.example.market.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("users")
 @RequiredArgsConstructor
 public class UserController {
-    private final JpaUserService userService;
+    private final UserService userService;
 
     @PostMapping("signin")
     public JwtResponseDto signIn(
