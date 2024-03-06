@@ -1,13 +1,11 @@
 package com.example.market.admin.dto;
 
 import com.example.market.auth.entity.UserUpgrade;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserUpgradeDto {

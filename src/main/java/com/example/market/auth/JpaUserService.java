@@ -137,13 +137,11 @@ public class JpaUserService implements UserDetailsService {
 
     public UserDto profileImg(MultipartFile file) {
         UserEntity userEntity = authFacade.extractUser();
-        String profileDir = String.format("media/%d/", userEntity.getId());
+        String profileDir = String.format("media/users/%d/", userEntity.getId());
         log.info(profileDir);
-        // 주어진 Path를 기준으로, 없는 모든 디렉토리를 생성하는 메서드
         try {
             Files.createDirectories(Path.of(profileDir));
         } catch (IOException e) {
-            // 폴더를 만드는데 실패하면 기록을하고 사용자에게 알림
             log.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -152,8 +150,6 @@ public class JpaUserService implements UserDetailsService {
         String[] fileNameSplit = originalFilename.split("\\.");
         String extension = fileNameSplit[fileNameSplit.length - 1];
         String profileFilename = "profile." + extension;
-        log.info(profileFilename);
-
         String profilePath = profileDir + profileFilename;
 
         try {
@@ -163,7 +159,7 @@ public class JpaUserService implements UserDetailsService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        String requestPath = String.format("/static/%d/%s", userEntity.getId(), profileFilename);
+        String requestPath = String.format("/static/users/%d/%s", userEntity.getId(), profileFilename);
         userEntity.setProfileImg(requestPath);
         return UserDto.fromEntity(userRepo.save(userEntity));
     }
