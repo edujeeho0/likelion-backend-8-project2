@@ -77,6 +77,8 @@ public class OrderService {
                         .getOwner()
                         .getId().equals(user.getId()))
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                if (dto.getReason() == null)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 order.setReason(dto.getReason());
                 order.setStatus(dto.getStatus());
             }
@@ -87,7 +89,7 @@ public class OrderService {
                         .getId().equals(user.getId()))
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                 order.setStatus(dto.getStatus());
-                order.getItem().decreaseStock(dto.getCount());
+                order.getItem().decreaseStock(order.getCount());
             }
             case CANCELED -> {
                 if (!order.getOrderUser().getId().equals(user.getId()))
