@@ -25,10 +25,24 @@ public class WebSecurityConfig {
     ) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/users/**")
-                        .anonymous()
-                        .requestMatchers(HttpMethod.PUT, "/users/signup")
+                        .requestMatchers(
+                                "/users/signin",
+                                "/users/signup"
+                        ).anonymous()
+                        .requestMatchers(
+                                "/users/details"
+                        )
                         .authenticated()
+                        .requestMatchers(
+                                "/users/upgrade"
+                        )
+                        .hasRole("ACTIVE")
+                        .requestMatchers(
+                                "/admin/**"
+                        )
+                        .hasRole("ADMIN")
+                        .anyRequest()
+                        .hasRole("ACTIVE")
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

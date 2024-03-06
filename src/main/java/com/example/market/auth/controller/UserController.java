@@ -1,13 +1,10 @@
-package com.example.market.auth;
+package com.example.market.auth.controller;
 
-import com.example.market.auth.dto.CreateUserDto;
-import com.example.market.auth.dto.JwtRequestDto;
-import com.example.market.auth.dto.JwtResponseDto;
-import com.example.market.auth.dto.UpdateUserDto;
+import com.example.market.auth.JpaUserService;
+import com.example.market.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -34,12 +31,21 @@ public class UserController {
         userService.createUser(dto);
     }
 
-    @PutMapping("signup")
+    @PutMapping("details")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void signUpFinal(
             @RequestBody
             UpdateUserDto dto
     ) {
         userService.updateUser(dto);
+    }
+
+    @PutMapping("upgrade")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void upgrade(
+            @RequestBody
+            RequestUpgradeDto dto
+    ) {
+        userService.upgradeRoleRequest(dto);
     }
 }
