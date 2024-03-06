@@ -3,6 +3,7 @@ package com.example.market.shop;
 import com.example.market.auth.AuthenticationFacade;
 import com.example.market.auth.entity.UserEntity;
 import com.example.market.shop.dto.ItemOrderDto;
+import com.example.market.shop.entity.Shop;
 import com.example.market.shop.entity.ShopItem;
 import com.example.market.shop.entity.ShopItemOrder;
 import com.example.market.shop.repo.ShopItemOrderRepo;
@@ -51,13 +52,12 @@ public class OrderService {
                 .map(ItemOrderDto::fromEntity);
     }
 
-    public Page<ItemOrderDto> myShopOrders(Pageable pageable) {
+    public Page<ItemOrderDto> myShopOrders(Long shopId, Pageable pageable) {
+        Shop shop = shopRepo.findById(shopId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         UserEntity user = authFacade.extractUser();
-        if (!Arrays.asList(user.getRoles().split(",")).contains("ROLE_OWNER"))
+        if (!shop.getOwner().getId().equals(user.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        Long shopId = shopRepo.findByOwnerId(user.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
-                .getId();
         return orderRepo.findAllByShopId(shopId, pageable)
                 .map(ItemOrderDto::fromEntity);
     }

@@ -1,5 +1,6 @@
 package com.example.market.shop;
 
+import com.example.market.shop.dto.ItemOrderDto;
 import com.example.market.shop.dto.ShopDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ShopController {
     private final ShopService service;
+    private final OrderService orderService;
 
     @GetMapping
     public Page<ShopDto> readPage(
@@ -28,6 +30,15 @@ public class ShopController {
             Long id
     ) {
         return service.readOne(id);
+    }
+
+    @GetMapping("{id}/orders")
+    public Page<ItemOrderDto> shopOrders(
+            @PathVariable("id")
+            Long id,
+            Pageable pageable
+    ) {
+        return orderService.myShopOrders(id, pageable);
     }
 
     @PutMapping("{id}")

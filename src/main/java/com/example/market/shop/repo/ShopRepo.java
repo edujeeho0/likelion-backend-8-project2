@@ -15,12 +15,11 @@ public interface ShopRepo extends JpaRepository<Shop, Long> {
             "ORDER BY o.createdAt DESC ")
     Page<Shop> findAllByStatus(Shop.Status status, Pageable pageable);
 
-    Optional<Shop> findByOwnerId(Long ownerId);
-
     @Query("SELECT DISTINCT s " +
             "FROM ShopOpenRequest r JOIN r.shop s " +
             "WHERE r.isApproved IS NULL")
     Page<Shop> findOpenRequested(Pageable pageable);
+
     @Query("SELECT s " +
             "FROM Shop s " +
             "WHERE s.closeReason IS NOT NULL " +
