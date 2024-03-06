@@ -16,6 +16,9 @@ public class ShopDto {
     private Shop.Status status;
     private String closeReason;
 
+    private String address;
+    private String coordinates;
+
     public static ShopDto fromEntity(Shop entity) {
         return fromEntity(entity, false);
     }
@@ -26,7 +29,9 @@ public class ShopDto {
                 .name(entity.getName())
                 .description(entity.getDescription())
                 .category(entity.getCategory())
-                .status(entity.getStatus());
+                .status(entity.getStatus())
+                .address(entity.getAddress())
+                .coordinates(entity.getCoordinates());
         if (admin) builder
                 .closeReason(entity.getCloseReason());
         return builder.build();

@@ -47,6 +47,8 @@ public class ShopService {
         shop.setName(dto.getName());
         shop.setDescription(dto.getDescription());
         shop.setCategory(dto.getCategory());
+        shop.setAddress(dto.getAddress());
+        shop.setCoordinates(dto.getCoordinates());
         return ShopDto.fromEntity(shopRepo.save(shop));
     }
 

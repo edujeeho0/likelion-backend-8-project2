@@ -27,6 +27,10 @@ public class Shop extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private Status status = Status.PREPARING;
+    @Setter
+    private String address;
+    @Setter
+    private String coordinates;
 
     @Builder.Default
     @OneToMany(mappedBy = "shop", fetch = FetchType.LAZY)
