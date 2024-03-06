@@ -22,8 +22,9 @@ public class TradeItem extends BaseEntity {
     @Setter
     private Integer minPrice;
     @Setter
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.ON_SALE;
     public enum Status {
         ON_SALE, SOLD
     }

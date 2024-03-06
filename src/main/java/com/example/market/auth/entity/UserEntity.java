@@ -27,5 +27,6 @@ public class UserEntity extends BaseEntity {
     @Setter
     private String profileImg;
     @Setter
-    private String roles;
+    @Builder.Default
+    private String roles = "ROLE_INACTIVE";
 }

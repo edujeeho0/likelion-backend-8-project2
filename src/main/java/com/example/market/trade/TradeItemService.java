@@ -35,7 +35,6 @@ public class TradeItemService {
                 .title(dto.getTitle())
                 .content(dto.getContent())
                 .minPrice(dto.getMinPrice())
-                .status(TradeItem.Status.ON_SALE)
                 .build()));
     }
 

@@ -19,8 +19,9 @@ public class TradeOffer extends BaseEntity {
 
     private Integer offerPrice;
     @Setter
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.OFFERED;
 
     public enum Status {
         OFFERED,

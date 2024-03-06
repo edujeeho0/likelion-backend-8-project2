@@ -8,6 +8,8 @@ import com.example.market.auth.entity.UserUpgrade;
 import com.example.market.auth.jwt.JwtTokenUtils;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
+import com.example.market.shop.entity.Shop;
+import com.example.market.shop.repo.ShopRepo;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -40,18 +42,28 @@ public class UserService implements UserDetailsService {
             UserRepo userRepo,
             UserUpgradeRepo userUpgradeRepo, PasswordEncoder passwordEncoder,
             JwtTokenUtils jwtTokenUtils,
-            FileHandlerUtils fileHandlerUtils) {
+            FileHandlerUtils fileHandlerUtils,
+            ShopRepo shopRepo
+    ) {
         this.authFacade = authFacade;
         this.userRepo = userRepo;
         this.userUpgradeRepo = userUpgradeRepo;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenUtils = jwtTokenUtils;
         this.fileHandlerUtils = fileHandlerUtils;
+        UserEntity owner = UserEntity.builder()
+                .username("shop_owner")
+                .password(passwordEncoder.encode("test"))
+                .age(30)
+                .email("owner@gmail.com")
+                .phone("01087654321")
+                .roles("ROLE_ACTIVE")
+                .roles("ROLE_ACTIVE,ROLE_OWNER")
+                .build();
         userRepo.saveAll(List.of(
                 UserEntity.builder()
                         .username("inactive")
                         .password(passwordEncoder.encode("test"))
-                        .roles("ROLE_INACTIVE")
                         .build(),
                 UserEntity.builder()
                         .username("normal")
@@ -69,21 +81,16 @@ public class UserService implements UserDetailsService {
                         .phone("01012345679")
                         .roles("ROLE_ACTIVE")
                         .build(),
-                UserEntity.builder()
-                        .username("shop_owner")
-                        .password(passwordEncoder.encode("test"))
-                        .age(30)
-                        .email("owner@gmail.com")
-                        .phone("01087654321")
-                        .roles("ROLE_ACTIVE")
-                        .roles("ROLE_ACTIVE,ROLE_OWNER")
-                        .build(),
+                owner,
                 UserEntity.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("test"))
                         .roles("ROLE_ACTIVE,ROLE_ADMIN")
                         .build()
         ));
+        shopRepo.save(Shop.builder()
+                .owner(owner)
+                .build());
     }
 
     @Override
@@ -103,7 +110,6 @@ public class UserService implements UserDetailsService {
         return UserDto.fromEntity(userRepo.save(UserEntity.builder()
                 .username(dto.getUsername())
                 .password(passwordEncoder.encode(dto.getPassword()))
-                .roles("ROLE_INACTIVE")
                 .build()));
     }
 

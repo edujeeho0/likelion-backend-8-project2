@@ -5,6 +5,8 @@ import com.example.market.admin.dto.UserUpgradeDto;
 import com.example.market.auth.entity.UserUpgrade;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
+import com.example.market.shop.entity.Shop;
+import com.example.market.shop.repo.ShopRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import java.util.List;
 public class AdminService {
     private final UserRepo userRepo;
     private final UserUpgradeRepo userUpgradeRepo;
+    private final ShopRepo shopRepo;
 
     public List<UserUpgradeDto> listRequests() {
         return userUpgradeRepo.findAll().stream()
@@ -33,6 +36,9 @@ public class AdminService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         upgrade.setApproved(true);
         upgrade.getTarget().setRoles("ROLE_ACTIVE,ROLE_OWNER");
+        shopRepo.save(Shop.builder()
+                .owner(upgrade.getTarget())
+                .build());
         return UserUpgradeDto.fromEntity(upgrade);
     }
 

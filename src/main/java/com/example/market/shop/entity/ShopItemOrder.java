@@ -4,10 +4,7 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
@@ -17,8 +14,11 @@ import lombok.NoArgsConstructor;
 public class ShopItemOrder extends BaseEntity {
     private Integer count;
     private Integer totalPrice;
+    @Setter
+    @Builder.Default
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private Status status = Status.ORDERED;
+    @Setter
     private String reason;
 
     public enum Status {

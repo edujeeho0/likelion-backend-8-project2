@@ -4,10 +4,7 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
@@ -17,6 +14,8 @@ import lombok.NoArgsConstructor;
 public class ShopOpenRequest extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Shop shop;
+    @Setter
     private Boolean isApproved;
+    @Setter
     private String reason;
 }

@@ -33,7 +33,6 @@ public class OfferService {
                 .user(user)
                 .item(item)
                 .offerPrice(dto.getOfferPrice())
-                .status(TradeOffer.Status.OFFERED)
                 .build()));
     }
 
