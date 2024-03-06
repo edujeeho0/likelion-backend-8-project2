@@ -14,6 +14,7 @@ public class TradeItemDto {
     private String content;
     private String img;
     private Integer minPrice;
+    private TradeItem.Status status;
 
     public static TradeItemDto fromEntity(TradeItem entity) {
         return TradeItemDto.builder()
@@ -22,6 +23,7 @@ public class TradeItemDto {
                 .content(entity.getContent())
                 .img(entity.getImg())
                 .minPrice(entity.getMinPrice())
+                .status(entity.getStatus())
                 .build();
     }
 }

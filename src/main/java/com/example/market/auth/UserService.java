@@ -62,6 +62,14 @@ public class UserService implements UserDetailsService {
                         .roles("ROLE_ACTIVE")
                         .build(),
                 UserEntity.builder()
+                        .username("normal2")
+                        .password(passwordEncoder.encode("test"))
+                        .age(30)
+                        .email("normal2@gmail.com")
+                        .phone("01012345679")
+                        .roles("ROLE_ACTIVE")
+                        .build(),
+                UserEntity.builder()
                         .username("shop_owner")
                         .password(passwordEncoder.encode("test"))
                         .age(30)
