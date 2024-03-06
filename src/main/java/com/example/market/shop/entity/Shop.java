@@ -26,7 +26,7 @@ public class Shop extends BaseEntity {
     private Status status = Status.PREPARING;
 
     @Setter
-    private boolean closed;
+    private Boolean closed;
     @Setter
     private String closeReason;
     public enum Category {

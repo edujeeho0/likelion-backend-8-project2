@@ -15,5 +15,5 @@ public class ShopItem extends BaseEntity {
     private String img;
     private String description;
     private Integer price;
-    private Integer count;
+    private Integer stock;
 }

@@ -4,6 +4,7 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 @Getter
@@ -12,6 +13,8 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class ShopItemOrder extends BaseEntity {
+    @ManyToOne
+    private ShopItem item;
     private Integer count;
     private Integer totalPrice;
     @Setter
