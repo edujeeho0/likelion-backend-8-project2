@@ -41,6 +41,20 @@ public class UserController {
         return userService.updateUser(dto);
     }
 
+    @PostMapping("validate")
+    public UserDto validate(
+            @RequestBody
+            ValidateDto dto
+    ) {
+        return userService.validate(dto);
+    }
+
+    @PostMapping("validate-request")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void requestValidate() {
+        userService.requestValidate();
+    }
+
     @PutMapping("upgrade")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void upgrade(

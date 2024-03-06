@@ -1,5 +1,6 @@
 package com.example.market.trade;
 
+import com.example.market.alert.AlertService;
 import com.example.market.auth.AuthenticationFacade;
 import com.example.market.auth.entity.UserEntity;
 import com.example.market.ncp.dto.direction.DirectionNcpResponse;
@@ -33,10 +34,12 @@ public class OfferService {
     private final TradeLocationRepo locationRepo;
     private final AuthenticationFacade authFacade;
     private final NcpApiService apiService;
+    private final AlertService alertService;
 
     public TradeOfferDto create(Long itemId, TradeOfferDto dto) {
         TradeItem item = itemRepo.findById(itemId)
             .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND));
+        alertService.sendOfferAlert(itemId, dto.getOfferPrice());
         UserEntity user = authFacade.extractUser();
         return TradeOfferDto.fromEntity(offerRepo.save(TradeOffer.builder()
                 .user(user)
@@ -86,12 +89,17 @@ public class OfferService {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                 // 확정시 다른 제안은 전부 거절
                 offerRepo.findAllByIdNot(offerId)
-                        .forEach(other -> other.setStatus(TradeOffer.Status.DECLINED));
+                        .forEach(other -> {
+                            other.setStatus(TradeOffer.Status.DECLINED);
+                            alertService.sendTradeEndAlert(other.getId());
+                        });
                 // 물품은 판매 완료
                 item.setStatus(TradeItem.Status.SOLD);
             }
         }
         offer.setStatus(status);
+        if (offer.getStatus().equals(TradeOffer.Status.ACCEPTED))
+            alertService.sendOfferAcceptedAlert(offerId);
         return TradeOfferDto.fromEntity(offer);
     }
 

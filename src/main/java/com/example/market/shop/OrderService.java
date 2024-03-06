@@ -1,5 +1,6 @@
 package com.example.market.shop;
 
+import com.example.market.alert.AlertService;
 import com.example.market.auth.AuthenticationFacade;
 import com.example.market.auth.entity.UserEntity;
 import com.example.market.shop.dto.ItemOrderDto;
@@ -29,6 +30,7 @@ public class OrderService {
     private final ShopItemRepo itemRepo;
     private final ShopItemOrderRepo orderRepo;
     private final TossHttpService tossHttpService;
+    private final AlertService alertService;
 
     public ItemOrderDto createOrder(ItemOrderDto dto) {
         ShopItem item = itemRepo.findById(dto.getItemId())
@@ -98,6 +100,7 @@ public class OrderService {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                 order.setStatus(dto.getStatus());
                 order.getItem().decreaseStock(order.getCount());
+                alertService.sendPurchaseAcceptAlert(orderId);
             }
             case CANCELED -> {
                 if (!order.getOrderUser().getId().equals(user.getId()))

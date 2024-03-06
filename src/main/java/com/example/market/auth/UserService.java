@@ -1,16 +1,18 @@
 package com.example.market.auth;
 
 import com.example.market.FileHandlerUtils;
+import com.example.market.alert.AlertService;
 import com.example.market.auth.dto.*;
 import com.example.market.auth.entity.MarketUserDetails;
 import com.example.market.auth.entity.UserEntity;
 import com.example.market.auth.entity.UserUpgrade;
+import com.example.market.auth.entity.Validation;
 import com.example.market.auth.jwt.JwtTokenUtils;
 import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
-import com.example.market.shop.entity.Shop;
-import com.example.market.shop.repo.ShopRepo;
+import com.example.market.auth.repo.ValidationRepo;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,77 +23,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements UserDetailsService {
     private final AuthenticationFacade authFacade;
     private final UserRepo userRepo;
+    private final ValidationRepo validationRepo;
     private final UserUpgradeRepo userUpgradeRepo;
+    private final AlertService alertService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtils jwtTokenUtils;
     private final FileHandlerUtils fileHandlerUtils;
-
-    public UserService(
-            AuthenticationFacade authFacade,
-            UserRepo userRepo,
-            UserUpgradeRepo userUpgradeRepo, PasswordEncoder passwordEncoder,
-            JwtTokenUtils jwtTokenUtils,
-            FileHandlerUtils fileHandlerUtils,
-            ShopRepo shopRepo
-    ) {
-        this.authFacade = authFacade;
-        this.userRepo = userRepo;
-        this.userUpgradeRepo = userUpgradeRepo;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtTokenUtils = jwtTokenUtils;
-        this.fileHandlerUtils = fileHandlerUtils;
-        UserEntity owner = UserEntity.builder()
-                .username("shop_owner")
-                .password(passwordEncoder.encode("test"))
-                .age(30)
-                .email("owner@gmail.com")
-                .phone("01087654321")
-                .roles("ROLE_ACTIVE")
-                .roles("ROLE_ACTIVE,ROLE_OWNER")
-                .build();
-        userRepo.saveAll(List.of(
-                UserEntity.builder()
-                        .username("inactive")
-                        .password(passwordEncoder.encode("test"))
-                        .build(),
-                UserEntity.builder()
-                        .username("normal")
-                        .password(passwordEncoder.encode("test"))
-                        .age(30)
-                        .email("normal@gmail.com")
-                        .phone("01012345678")
-                        .roles("ROLE_ACTIVE")
-                        .build(),
-                UserEntity.builder()
-                        .username("normal2")
-                        .password(passwordEncoder.encode("test"))
-                        .age(30)
-                        .email("normal2@gmail.com")
-                        .phone("01012345679")
-                        .roles("ROLE_ACTIVE")
-                        .build(),
-                owner,
-                UserEntity.builder()
-                        .username("admin")
-                        .password(passwordEncoder.encode("test"))
-                        .roles("ROLE_ACTIVE,ROLE_ADMIN")
-                        .build()
-        ));
-        shopRepo.save(Shop.builder()
-                .owner(owner)
-                .build());
-    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -128,6 +74,7 @@ public class UserService implements UserDetailsService {
         return response;
     }
 
+    @Transactional
     public UserDto updateUser(UpdateUserDto dto){
         UserEntity userEntity = authFacade.extractUser();
         userEntity.setAge(dto.getAge());
@@ -138,9 +85,50 @@ public class UserService implements UserDetailsService {
                 userEntity.getEmail() != null &&
                 userEntity.getPhone() != null &&
                 userEntity.getRoles().equals("ROLE_INACTIVE")
-        )
-                userEntity.setRoles("ROLE_ACTIVE");
+        ) {
+            String validationCode = UUID.randomUUID().toString().split("-")[0];
+            validationRepo.save(Validation.builder()
+                    .user(userEntity)
+                    .validation(validationCode)
+                    .validated(false)
+                    .build());
+            alertService.sendValidation(userEntity.getId(), validationCode);
+        }
         return UserDto.fromEntity(userRepo.save(userEntity));
+    }
+
+    @Transactional
+    public UserDto validate(ValidateDto dto) {
+        UserEntity user = authFacade.extractUser();
+        if (!user.getRoles().equals("ROLE_INACTIVE"))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        Validation validation = validationRepo.findTopByUserIdOrderByCreatedAtDesc(user.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        if (validation.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(10)))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        if (validation.getValidation().equals(dto.getValidationCode())) {
+            user.setRoles("ROLE_ACTIVE");
+            return UserDto.fromEntity(userRepo.save(user));
+        } else throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+    }
+
+    public void requestValidate() {
+        UserEntity userEntity = authFacade.extractUser();
+        if (
+                userEntity.getAge() != null &&
+                userEntity.getEmail() != null &&
+                userEntity.getPhone() != null &&
+                userEntity.getRoles().equals("ROLE_INACTIVE")
+        ) {
+            String validationCode = UUID.randomUUID().toString().split("-")[0];
+            validationRepo.save(Validation.builder()
+                    .user(userEntity)
+                    .validation(validationCode)
+                    .validated(false)
+                    .build());
+            alertService.sendValidation(userEntity.getId(), validationCode);
+        }
+        else throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
 
     public void upgradeRoleRequest(RequestUpgradeDto dto) {
