@@ -1,6 +1,5 @@
 package com.example.market.toss;
 
-import com.example.market.shop.ItemService;
 import com.example.market.shop.dto.ShopItemDto;
 import com.example.market.shop.repo.ShopItemRepo;
 import com.example.market.toss.dto.PaymentConfirmDto;
@@ -15,7 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Controller
 @RequiredArgsConstructor
 public class TossController {
-//    private final ItemService itemService;
+    private final TossService service;
     private final ShopItemRepo itemRepo;
 
     @PostMapping("/toss/confirm-payment")
@@ -26,10 +25,7 @@ public class TossController {
             @RequestHeader("Authorization")
             String authorization
     ) {
-        log.info(authorization);
-        log.info("received: {}", dto.toString());
-        throw new ResponseStatusException(HttpStatus.NOT_IMPLEMENTED);
-//        return service.confirmPayment(dto);
+        return service.confirmPayment(dto);
     }
 
     // 토스 결제 전용 Endpoint
