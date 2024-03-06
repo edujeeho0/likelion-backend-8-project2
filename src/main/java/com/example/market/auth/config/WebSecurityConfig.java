@@ -39,7 +39,7 @@ public class WebSecurityConfig {
                                 "/admin/**"
                         )
                         .hasRole("ADMIN")
-                        .requestMatchers("/static/**")
+                        .requestMatchers("/static/**", "/items/{id}")
                         .permitAll()
                         .anyRequest()
                         .hasRole("ACTIVE")
