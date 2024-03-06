@@ -4,7 +4,11 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,4 +24,11 @@ public class ShopItem extends BaseEntity {
     private String description;
     private Integer price;
     private Integer stock;
+    @Builder.Default
+    @OneToMany(mappedBy = "item")
+    private final List<ShopItemOrder> orders = new ArrayList<>();
+
+    public void decreaseStock(Integer count) {
+        this.stock -= count;
+    }
 }

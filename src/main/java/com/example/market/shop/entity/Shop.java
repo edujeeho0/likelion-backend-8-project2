@@ -5,6 +5,7 @@ import com.example.market.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -26,6 +27,10 @@ public class Shop extends BaseEntity {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private Status status = Status.PREPARING;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "shop", fetch = FetchType.LAZY)
+    private final List<ShopItem> items = new ArrayList<>();
 
     @Setter
     private String closeReason;

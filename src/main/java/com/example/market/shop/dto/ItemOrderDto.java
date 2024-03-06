@@ -12,6 +12,7 @@ public class ItemOrderDto {
     private Long id;
     private Long itemId;
     private String itemName;
+    private String address;
     private Integer count;
     private Integer totalPrice;
     private ShopItemOrder.Status status;
@@ -22,6 +23,7 @@ public class ItemOrderDto {
                 .id(entity.getId())
                 .itemId(entity.getItem().getId())
                 .itemName(entity.getItem().getName())
+                .address(entity.getAddress())
                 .count(entity.getCount())
                 .totalPrice(entity.getTotalPrice())
                 .status(entity.getStatus())

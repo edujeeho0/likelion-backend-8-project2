@@ -1,10 +1,8 @@
 package com.example.market.shop.entity;
 
+import com.example.market.auth.entity.UserEntity;
 import com.example.market.entity.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -13,8 +11,11 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 public class ShopItemOrder extends BaseEntity {
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private ShopItem item;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private UserEntity orderUser;
+    private String address;
     private Integer count;
     private Integer totalPrice;
     @Setter
@@ -25,6 +26,6 @@ public class ShopItemOrder extends BaseEntity {
     private String reason;
 
     public enum Status {
-        ORDERED, ACCEPTED, DECLINED,
+        ORDERED, ACCEPTED, DECLINED, CANCELED
     }
 }
