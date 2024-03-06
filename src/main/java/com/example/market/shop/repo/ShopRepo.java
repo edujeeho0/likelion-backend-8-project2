@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface ShopRepo extends JpaRepository<Shop, Long> {
     @Query("SELECT s " +
-            "FROM Shop s JOIN s.items i JOIN i.orders o " +
+            "FROM Shop s LEFT JOIN s.items i LEFT JOIN i.orders o " +
             "WHERE s.status = :status " +
             "ORDER BY o.createdAt DESC ")
     Page<Shop> findAllByStatus(Shop.Status status, Pageable pageable);

@@ -78,6 +78,14 @@ public class TestData {
                         .roles("ROLE_ACTIVE")
                         .build(),
                 UserEntity.builder()
+                        .username("normal3")
+                        .password(passwordEncoder.encode("test"))
+                        .age(30)
+                        .email("edujeeho@gmail.com")
+                        .phone("01012345679")
+                        .roles("ROLE_ACTIVE")
+                        .build(),
+                UserEntity.builder()
                         .username("owner1")
                         .password(passwordEncoder.encode("test"))
                         .age(30)
@@ -117,6 +125,7 @@ public class TestData {
                         .name(user.getUsername() + "'s shop")
                         .description("description")
                         .category(Shop.Category.DIGITAL)
+//                        .status(Shop.Status.PREPARING)
                         .status(Shop.Status.OPEN)
                         .address("59-8 정자1동 Bundang-gu, Seongnam-si, Gyeonggi-do")
                         .coordinates("127.1146267,37.3699127")

@@ -39,7 +39,7 @@ public class OfferService {
     public TradeOfferDto create(Long itemId, TradeOfferDto dto) {
         TradeItem item = itemRepo.findById(itemId)
             .orElseThrow(() ->new ResponseStatusException(HttpStatus.NOT_FOUND));
-        alertService.sendOfferAlert(itemId, dto.getOfferPrice());
+//        alertService.sendOfferAlert(itemId, dto.getOfferPrice());
         UserEntity user = authFacade.extractUser();
         return TradeOfferDto.fromEntity(offerRepo.save(TradeOffer.builder()
                 .user(user)
@@ -91,15 +91,15 @@ public class OfferService {
                 offerRepo.findAllByIdNot(offerId)
                         .forEach(other -> {
                             other.setStatus(TradeOffer.Status.DECLINED);
-                            alertService.sendTradeEndAlert(other.getId());
+//                            alertService.sendTradeEndAlert(other.getId());
                         });
                 // 물품은 판매 완료
                 item.setStatus(TradeItem.Status.SOLD);
             }
         }
         offer.setStatus(status);
-        if (offer.getStatus().equals(TradeOffer.Status.ACCEPTED))
-            alertService.sendOfferAcceptedAlert(offerId);
+//        if (offer.getStatus().equals(TradeOffer.Status.ACCEPTED))
+//            alertService.sendOfferAcceptedAlert(offerId);
         return TradeOfferDto.fromEntity(offer);
     }
 
@@ -152,6 +152,10 @@ public class OfferService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (location.getStatus().equals(OFFERED))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        UserEntity user = authFacade.extractUser();
+        if (!location.getOffer().getUser().getId().equals(user.getId()) &&
+            !location.getOffer().getItem().getUser().getId().equals(user.getId()))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         GeoLocationNcpResponse geoResponse = apiService.geoLocation(fromIp);
         String fromCoords = String.format(
                 "%s,%s",

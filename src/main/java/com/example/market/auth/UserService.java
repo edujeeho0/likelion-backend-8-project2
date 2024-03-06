@@ -74,8 +74,8 @@ public class UserService implements UserDetailsService {
                 userEntity.getPassword()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
-        if (userEntity.getRoles().contains("ROLE_OWNER") || userEntity.getRoles().contains("ROLE_ADMIN"))
-            throw new UserNeedsCaptchaException(userEntity);
+//        if (userEntity.getRoles().contains("ROLE_OWNER") || userEntity.getRoles().contains("ROLE_ADMIN"))
+//            throw new UserNeedsCaptchaException(userEntity);
         String jwt = jwtTokenUtils.generateToken(MarketUserDetails.fromEntity(userEntity));
         JwtResponseDto response = new JwtResponseDto();
         response.setToken(jwt);

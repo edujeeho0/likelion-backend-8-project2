@@ -89,12 +89,12 @@ public class OrderService {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 order.setReason(dto.getReason());
                 order.setStatus(dto.getStatus());
-                tossHttpService.cancelPayment(
-                        order.getPaymentKey(),
-                        PaymentCancelDto.builder()
-                                .cancelReason(String.format("DECLINED: %s", dto.getReason()))
-                                .build()
-                );
+//                tossHttpService.cancelPayment(
+//                        order.getPaymentKey(),
+//                        PaymentCancelDto.builder()
+//                                .cancelReason(String.format("DECLINED: %s", dto.getReason()))
+//                                .build()
+//                );
             }
             case ACCEPTED -> {
                 if (!order.getItem()
@@ -104,7 +104,7 @@ public class OrderService {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN);
                 order.setStatus(dto.getStatus());
                 order.getItem().decreaseStock(order.getCount());
-                alertService.sendPurchaseAcceptAlert(orderId);
+//                alertService.sendPurchaseAcceptAlert(orderId);
             }
             case CANCELED -> {
                 if (!order.getOrderUser().getId().equals(user.getId()))
@@ -112,12 +112,12 @@ public class OrderService {
                 if (order.getStatus().equals(ShopItemOrder.Status.ACCEPTED))
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
                 order.setStatus(dto.getStatus());
-                tossHttpService.cancelPayment(
-                        order.getPaymentKey(),
-                        PaymentCancelDto.builder()
-                                .cancelReason(String.format("CANCELED: %s", dto.getReason()))
-                                .build()
-                );
+//                tossHttpService.cancelPayment(
+//                        order.getPaymentKey(),
+//                        PaymentCancelDto.builder()
+//                                .cancelReason(String.format("CANCELED: %s", dto.getReason()))
+//                                .build()
+//                );
             }
         }
         return ItemOrderDto.fromEntity(orderRepo.save(order));
