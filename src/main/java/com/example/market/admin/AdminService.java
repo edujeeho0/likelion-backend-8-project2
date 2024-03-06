@@ -7,6 +7,8 @@ import com.example.market.auth.repo.UserRepo;
 import com.example.market.auth.repo.UserUpgradeRepo;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -42,9 +44,8 @@ public class AdminService {
         return UserUpgradeDto.fromEntity(upgrade);
     }
 
-    public List<UserDto> readAllUsers() {
-        return userRepo.findAll().stream()
-                .map(UserDto::fromEntity)
-                .toList();
+    public Page<UserDto> readUsersPage(Pageable pageable) {
+        return userRepo.findAll(pageable)
+                .map(UserDto::fromEntity);
     }
 }

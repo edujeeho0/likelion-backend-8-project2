@@ -4,6 +4,8 @@ import com.example.market.auth.dto.UserDto;
 import com.example.market.admin.dto.UserUpgradeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +19,10 @@ public class AdminController {
     private final AdminService service;
 
     @GetMapping("users")
-    public List<UserDto> readAllUsers() {
-        return service.readAllUsers();
+    public Page<UserDto> readAllUsers(
+            Pageable pageable
+    ) {
+        return service.readUsersPage(pageable);
     }
 
     @GetMapping("upgrades")
