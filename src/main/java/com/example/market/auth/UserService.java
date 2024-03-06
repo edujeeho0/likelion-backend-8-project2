@@ -4,7 +4,7 @@ import com.example.market.FileHandlerUtils;
 import com.example.market.alert.AlertService;
 import com.example.market.auth.dto.*;
 import com.example.market.auth.entity.*;
-import com.example.market.auth.exception.UserIsOwnerException;
+import com.example.market.auth.exception.UserNeedsCaptchaException;
 import com.example.market.auth.jwt.JwtTokenUtils;
 import com.example.market.auth.repo.CaptchaRepo;
 import com.example.market.auth.repo.UserRepo;
@@ -74,8 +74,8 @@ public class UserService implements UserDetailsService {
                 userEntity.getPassword()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
 
-        if (userEntity.getRoles().contains("ROLE_OWNER"))
-            throw new UserIsOwnerException(userEntity);
+        if (userEntity.getRoles().contains("ROLE_OWNER") || userEntity.getRoles().contains("ROLE_ADMIN"))
+            throw new UserNeedsCaptchaException(userEntity);
         String jwt = jwtTokenUtils.generateToken(MarketUserDetails.fromEntity(userEntity));
         JwtResponseDto response = new JwtResponseDto();
         response.setToken(jwt);
@@ -125,7 +125,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserDto validate(ValidateDto dto) {
+    public UserDto validate(String code) {
         UserEntity user = authFacade.extractUser();
         if (!user.getRoles().equals("ROLE_INACTIVE"))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
@@ -133,7 +133,7 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         if (validation.getCreatedAt().isBefore(LocalDateTime.now().minusMinutes(10)))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        if (validation.getValidation().equals(dto.getValidationCode())) {
+        if (validation.getValidation().equals(code)) {
             user.setRoles("ROLE_ACTIVE");
             return UserDto.fromEntity(userRepo.save(user));
         } else throw new ResponseStatusException(HttpStatus.FORBIDDEN);

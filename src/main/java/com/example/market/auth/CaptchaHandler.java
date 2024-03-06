@@ -2,7 +2,7 @@ package com.example.market.auth;
 
 import com.example.market.auth.dto.CaptchaDto;
 import com.example.market.auth.entity.Captcha;
-import com.example.market.auth.exception.UserIsOwnerException;
+import com.example.market.auth.exception.UserNeedsCaptchaException;
 import com.example.market.auth.repo.CaptchaRepo;
 import com.example.market.ncp.dto.NcpCaptchaDto;
 import com.example.market.ncp.service.NcpCaptchaService;
@@ -27,8 +27,8 @@ public class CaptchaHandler {
     private final NcpCaptchaService captchaService;
     private final Gson gson;
 
-    @ExceptionHandler(UserIsOwnerException.class)
-    public CaptchaDto sendCaptcha(UserIsOwnerException exception) {
+    @ExceptionHandler(UserNeedsCaptchaException.class)
+    public CaptchaDto sendCaptcha(UserNeedsCaptchaException exception) {
         Map<String, Object> params = Map.of("code", 0);
         NcpCaptchaDto ncpCaptchaDto = gson.fromJson(captchaService.captcha(params), NcpCaptchaDto.class);
         String imageUrl = UriComponentsBuilder.fromHttpUrl("https://naveropenapi.apigw.ntruss.com/captcha-bin/v1/ncaptcha")

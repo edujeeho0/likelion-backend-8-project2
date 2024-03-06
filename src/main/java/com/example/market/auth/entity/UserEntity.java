@@ -19,10 +19,10 @@ public class UserEntity extends BaseEntity {
     @Setter
     private Integer age;
     @Setter
-    @Column(unique = true)
+//    @Column(unique = true)
     private String email;
     @Setter
-    @Column(unique = true)
+//    @Column(unique = true)
     private String phone;
     @Setter
     private String profileImg;

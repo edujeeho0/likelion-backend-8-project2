@@ -22,7 +22,6 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 @RequiredArgsConstructor
 public class AlertEmailService implements AlertService {
-    private final UserRepo userRepo;
     private final TradeItemRepo itemRepo;
     private final JavaMailSender emailSender;
     private final TradeOfferRepo offerRepo;
@@ -36,7 +35,7 @@ public class AlertEmailService implements AlertService {
         sendMail(
                 user.getEmail(),
                 "이메일 인증 요청",
-                String.format("인증번호: %s", validationCode)
+                String.format("인증링크: http://localhost:8080/users/validate?code=%s", validationCode)
         );
     }
 

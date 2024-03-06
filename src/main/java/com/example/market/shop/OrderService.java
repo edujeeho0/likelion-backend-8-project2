@@ -74,7 +74,11 @@ public class OrderService {
         switch (dto.getStatus()) {
             case ORDERED ->
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-            case VISIT -> order.setStatus(dto.getStatus());
+            case VISIT -> {
+                if (!order.getOrderUser().getId().equals(user.getId()))
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+                order.setStatus(dto.getStatus());
+            }
             case DECLINED -> {
                 if (!order.getItem()
                         .getShop()

@@ -49,12 +49,12 @@ public class UserController {
         return userService.updateUser(dto);
     }
 
-    @PostMapping("validate")
+    @GetMapping("validate")
     public UserDto validate(
-            @RequestBody
-            ValidateDto dto
+            @RequestParam("code")
+            String code
     ) {
-        return userService.validate(dto);
+        return userService.validate(code);
     }
 
     @PostMapping("validate-request")
