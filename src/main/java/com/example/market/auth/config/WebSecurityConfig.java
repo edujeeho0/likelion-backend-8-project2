@@ -30,13 +30,10 @@ public class WebSecurityConfig {
                                 "/users/signup"
                         ).anonymous()
                         .requestMatchers(
-                                "/users/details"
+                                "/users/details",
+                                "/users/profile"
                         )
                         .authenticated()
-                        .requestMatchers(
-                                "/users/upgrade"
-                        )
-                        .hasRole("ACTIVE")
                         .requestMatchers(
                                 "/admin/**"
                         )
@@ -47,7 +44,6 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                // JWT 필터를 권한 필터 앞에 삽입
                 .addFilterBefore(
                         new JwtTokenFilter(
                                 jwtTokenUtils,

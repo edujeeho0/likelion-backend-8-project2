@@ -5,7 +5,9 @@ import com.example.market.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -24,20 +26,20 @@ public class UserController {
 
     @PostMapping("signup")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void signUp(
+    public UserDto signUp(
             @RequestBody
             CreateUserDto dto
     ) {
-        userService.createUser(dto);
+        return userService.createUser(dto);
     }
 
     @PutMapping("details")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void signUpFinal(
+    public UserDto signUpFinal(
             @RequestBody
             UpdateUserDto dto
     ) {
-        userService.updateUser(dto);
+        return userService.updateUser(dto);
     }
 
     @PutMapping("upgrade")
@@ -48,4 +50,16 @@ public class UserController {
     ) {
         userService.upgradeRoleRequest(dto);
     }
+
+    @PutMapping(
+            value = "profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public UserDto profileImg(
+            @RequestParam("file")
+            MultipartFile file
+    ) {
+        return userService.profileImg(file);
+    }
+
 }

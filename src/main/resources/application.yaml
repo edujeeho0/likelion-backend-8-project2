@@ -1,4 +1,13 @@
 spring:
+  mvc:
+    # 어떤 경로에 대한 요청의 응답으로
+    # 정적 파일 응답을 할지를 결정하는 설정
+    static-path-pattern: /static/**
+  web:
+    resources:
+      # 어떤 폴더의 파일을 정적 응답으로 전달할지를 설정
+      static-locations: file:media/,classpath:/static
+
   datasource:
     url: jdbc:h2:mem:test;
     driver-class-name: org.h2.Driver
